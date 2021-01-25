@@ -1,7 +1,7 @@
 package com.carledwinti.scala.oop.filesystem.commands.`trait`
 
 import com.carledwinti.scala.oop.filesystem.State
-import com.carledwinti.scala.oop.filesystem.commands.{Ls, Mkdir, Pwd}
+import com.carledwinti.scala.oop.filesystem.commands.{Ls, Mkdir, Pwd, Touch}
 
 trait Command {
 
@@ -13,6 +13,7 @@ object Command{
   val MKDIR = "mkdir"
   val LS = "ls"
   val PWD = "pwd"
+  val TOUCH = "touch"
   def emptyCommand: Command = new Command{
     override def apply(state: State): State = state
   }//??? //returns nothing
@@ -30,9 +31,12 @@ object Command{
       else new Mkdir(tokens(1))
     }else if(LS.equals(tokens(0))){
       new Ls
-    } ele if(PWD.equals(tokens(0))){
+    } else if(PWD.equals(tokens(0))){
       new Pwd
-    }else
+    }else if(TOUCH.equals(tokens(0))){
+      if (tokens.length < 2) incompleteCommand(TOUCH)
+      else new Touch(tokens(1))
+  }else
       new UnknownCommand
   }
 }
