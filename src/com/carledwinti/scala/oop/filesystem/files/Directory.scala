@@ -1,17 +1,46 @@
 package com.carledwinti.scala.oop.filesystem.files
 
+import com.carledwinti.scala.oop.filesystem.exception.FileSystemException
+
+import scala.annotation.tailrec
+
 class Directory(override val parentPath: String, override val name: String, val contents: List[DirEntry]) extends DirEntry(parentPath, name) {
-  def hasEntry(name: String): Boolean = ???
+
+  def hasEntry(name: String): Boolean =
+    findEntry(name) != null
+
   def getAllFoldersInPath: List[String] = {
     // /a/b/c/d => List["a", "b", "c", "d"]
-    path.substring(1).split(Directory.SEPARATOR).toList
+    path.substring(1).split(Directory.SEPARATOR).toList.filter(x => !x.isEmpty)
 
   }// ???//Exception in thread "main" scala.NotImplementedError: an implementation is missing
-  def findDescendant(path: List[String]): Directory = ???
-  def addEntry(newEntry: DirEntry): Directory = ???
-  def findEntry(entryName: String): DirEntry = ???
-  def replaceEntry(entryName: String, newEntry: DirEntry): Directory = ???
-  def asDirectory: Directory = this
+
+  def findDescendant(path: List[String]): Directory =
+    if(path.isEmpty) this
+    else findEntry(path.head).asDirectory.findDescendant(path.tail)
+
+  def addEntry(newEntry: DirEntry): Directory =
+    new Directory(parentPath, name, contents :+ newEntry)
+
+  def findEntry(entryName: String): DirEntry = {
+    @tailrec
+    def findEntryHelper(name: String, contentList: List[DirEntry]): DirEntry =
+      if(contentList.isEmpty) null
+      else if(contentList.head.name.equals((name))) contentList.head
+      else findEntryHelper(name, contentList.tail)
+
+      findEntryHelper(entryName, contents)
+  }
+
+  def replaceEntry(entryName: String, newEntry: DirEntry): Directory =
+    new Directory(parentPath, name, contents.filter(e => !e.name.equals(entryName)) :+ newEntry)
+
+  def asDirectory: Directory =
+    this
+
+  def getType: String = "Directory"
+
+  override def asFile: File = throw new FileSystemException("A directory cannot be converted to a file!")
 }
 
 object Directory {
