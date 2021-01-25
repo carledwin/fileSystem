@@ -7,14 +7,22 @@ import java.util.Scanner
 
 object FileSystem extends App {
 
-  val scanner = new Scanner(System.in)
+/*
   val root = Directory.ROOT
-  var state = State(root, root)
+  io.Source.stdin.getLines().foldLeft(State(root, root))((concurrentState, newLine) => {
+    concurrentState.show
+    Command.from(newLine).apply(concurrentState)
+  })*/
 
-  while(true){
-    state.show
-    val input = scanner.nextLine()
-    state = Command.from(input).apply(state)
-  }
+  //OR
+    val scanner = new Scanner(System.in)
+    val root = Directory.ROOT
+    var state = State(root, root)
+
+    while(true){
+      state.show
+      val input = scanner.nextLine()
+      state = Command.from(input).apply(state)
+    }
 
 }
